@@ -1,4 +1,4 @@
-package list
+package com.manonpoulain.todo.list
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import com.manonpoulain.todo.R
 
 class TaskListFragment : Fragment() {
+
+    private var taskList = listOf("Task 1", "Task 2", "Task 3")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
