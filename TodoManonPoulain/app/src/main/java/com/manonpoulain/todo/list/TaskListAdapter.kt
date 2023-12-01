@@ -13,10 +13,12 @@ class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.TaskViewHolder>() {
 
     // on utilise `inner` ici afin d'avoir accès aux propriétés de l'adapter directement
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+
         fun bind(taskTitle: String) {
             // on affichera les données ici
 
-            currentList.plus(taskTitle);
+            itemView.findViewById<TextView>(R.id.task_title).setText(taskTitle);
 
         }
     }
@@ -31,9 +33,8 @@ class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.TaskViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        TODO("Not yet implemented")
-        TaskViewHolder.textRef
 
+        holder.bind(currentList[position])
 
     }
 
