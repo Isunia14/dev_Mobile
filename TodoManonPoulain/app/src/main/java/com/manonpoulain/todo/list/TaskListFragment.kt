@@ -32,6 +32,11 @@ class TaskListFragment : Fragment() {
         binding = FragmentTaskListBinding.inflate(inflater, container, false)
         val rootView = binding.root
 
+        adapter.onClickDelete = { task ->
+            taskList = taskList - task
+            refreshAdapter()
+        }// Supprimer la tâche
+
        adapter.submitList(taskList)
         return rootView
     }

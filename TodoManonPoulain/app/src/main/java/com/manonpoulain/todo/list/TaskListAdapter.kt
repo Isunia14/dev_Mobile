@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.manonpoulain.todo.R
 import com.manonpoulain.todo.databinding.FragmentTaskListBinding
 import com.manonpoulain.todo.databinding.ItemTaskBinding
@@ -25,15 +26,20 @@ object MyItemsDiffCallback : DiffUtil.ItemCallback<Task>() {
 class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(MyItemsDiffCallback) {
 
     // on utilise `inner` ici afin d'avoir accès aux propriétés de l'adapter directement
-    inner class TaskViewHolder(val binding: FragmentTaskListBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class TaskViewHolder(val binding: ItemTaskBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(task: Task) {
-            itemView.findViewById<TextView>(R.id.task_title).setText(task.title);
-            itemView.findViewById<TextView>(R.id.textDescriptor).setText(task.description);
+            binding.taskTitle.setText(task.title);
+            binding.textDescriptor.setText(task.description);
+            binding.deleteButton.setOnClickListener {
+                // Utilisation de la lambda dans le ViewHolder:
+                onClickDelete(task)
+            }
         }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        val itemView = FragmentTaskListBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        val itemView = ItemTaskBinding.inflate(LayoutInflater.from(parent.context),parent,false)
         return TaskViewHolder(itemView);
     }
 
@@ -43,5 +49,9 @@ class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(MyItem
 
     }
 
+    // Déclaration de la variable lambda dans l'adapter:
+    var onClickDelete: (Task) -> Unit = {
+
+    }
 
 }
