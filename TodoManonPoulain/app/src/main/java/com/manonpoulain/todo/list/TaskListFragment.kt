@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.manonpoulain.todo.R
+import java.util.UUID
 
 class TaskListFragment : Fragment() {
 
@@ -29,8 +31,19 @@ class TaskListFragment : Fragment() {
         return rootView
     }
 
+    fun refreshAdapter(){
+        adapter.currentList = taskList
+        adapter.notifyDataSetChanged()
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.manonpoulain)
+        val button = view.findViewById<FloatingActionButton>(R.id.floatingActionButton2)
+        button.setOnClickListener {
+            // Instanciation d'un objet task avec des données préremplies:
+            val newTask = Task(id = UUID.randomUUID().toString(), title = "Task ${taskList.size + 1}")
+            taskList = taskList + newTask
+            refreshAdapter()
+        }
         //super.onViewCreated(view, savedInstanceState)
         recyclerView.adapter = adapter
     }
