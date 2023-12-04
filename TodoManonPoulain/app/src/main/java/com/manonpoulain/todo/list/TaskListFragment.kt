@@ -27,12 +27,12 @@ class TaskListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_task_list, container, false)
-        adapter.currentList = taskList
+       adapter.currentList() = taskList
         return rootView
     }
 
-    fun refreshAdapter(){
-        adapter.currentList = taskList
+    fun refreshAdapter(recyclerView : RecyclerView){
+        recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -42,7 +42,7 @@ class TaskListFragment : Fragment() {
             // Instanciation d'un objet task avec des données préremplies:
             val newTask = Task(id = UUID.randomUUID().toString(), title = "Task ${taskList.size + 1}")
             taskList = taskList + newTask
-            refreshAdapter()
+            refreshAdapter(recyclerView)
         }
         //super.onViewCreated(view, savedInstanceState)
         recyclerView.adapter = adapter
