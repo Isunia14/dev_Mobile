@@ -1,5 +1,6 @@
 package com.manonpoulain.todo.list
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.manonpoulain.todo.R
 import com.manonpoulain.todo.databinding.FragmentTaskListBinding
+import com.manonpoulain.todo.detail.DetailActivity
 import java.util.UUID
 
 class TaskListFragment : Fragment() {
@@ -48,6 +50,8 @@ class TaskListFragment : Fragment() {
             val newTask = Task(id = UUID.randomUUID().toString(), title = "Task ${taskList.size + 1}")
             taskList = taskList + newTask
             refreshAdapter()
+            val intent = Intent(context, DetailActivity::class.java)
+            startActivity(intent)
         }
         //super.onViewCreated(view, savedInstanceState)
         recyclerView.adapter = adapter
