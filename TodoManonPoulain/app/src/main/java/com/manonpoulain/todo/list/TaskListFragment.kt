@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -53,13 +54,22 @@ class TaskListFragment : Fragment() {
         val button = binding.floatingActionButton2
         button.setOnClickListener {
             // Instanciation d'un objet task avec des données préremplies:
-            val newTask = Task(id = UUID.randomUUID().toString(), title = "Task ${taskList.size + 1}")
-            taskList = taskList + newTask
-            refreshAdapter()
+            //val newTask = Task(id = UUID.randomUUID().toString(), title = "Task ${taskList.size + 1}")
+            //taskList = taskList + newTask
+            //refreshAdapter()
             val intent = Intent(context, DetailActivity::class.java)
-            startActivity(intent)
+            //startActivity(intent)
+            createTask.launch(intent)
         }
         //super.onViewCreated(view, savedInstanceState)
         recyclerView.adapter = adapter
+    }
+
+    val createTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val task = result.data?.getSerializableExtra("task") as Task?
+        if(task != null) {
+            taskList = taskList + task
+            refreshAdapter()
+        }
     }
 }

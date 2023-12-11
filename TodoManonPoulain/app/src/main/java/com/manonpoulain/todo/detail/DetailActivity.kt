@@ -15,9 +15,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -25,6 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.manonpoulain.todo.R
 import com.manonpoulain.todo.detail.ui.theme.TodoManonPoulainTheme
+import com.manonpoulain.todo.list.Task
+import java.util.UUID
 
 class DetailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +44,11 @@ class DetailActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     //Detail("Android")
-                    Detail()
+                    Detail(onValidate={newTask->
+                        intent.putExtra("task", newTask)
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    })
                 }
             }
         }
@@ -45,7 +56,8 @@ class DetailActivity : ComponentActivity() {
 }
 
 @Composable
-fun Detail(modifier: Modifier = Modifier) {
+fun Detail(modifier: Modifier = Modifier,onValidate: (Task) -> Unit) {
+    var task by remember { mutableStateOf(Task(UUID.randomUUID().toString(),"","")) } // faire les imports suggérés par l'IDE
     Column(
         modifier = Modifier.padding(16.dp),
         Arrangement.spacedBy(16.dp)
@@ -55,16 +67,23 @@ fun Detail(modifier: Modifier = Modifier) {
             style=MaterialTheme.typography.headlineLarge,
             modifier = modifier
         )
-        Text(
-            text = "Title"
+        OutlinedTextField(
+            value=task.title,
+            onValueChange = {task = task.copy(title = it)},
+            label={Text("Title")}
+            //text = "Title"
         )
-        Text(
-            text = "Description"
+
+        OutlinedTextField(
+            value=task.description,
+            onValueChange = {task = task.copy(description = it)},
+            label={Text("Description")}
         )
 
         OutlinedButton(
             onClick = {
-                /*TODO : fermer l'activité ??*/
+                //val newTask = Task(id = UUID.randomUUID().toString(), title = "New Task !");
+                onValidate(task);
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.White,
@@ -79,6 +98,7 @@ fun Detail(modifier: Modifier = Modifier) {
         }
         
     }
+
 }
 
 @Preview(showBackground = true)
@@ -86,6 +106,6 @@ fun Detail(modifier: Modifier = Modifier) {
 fun DetailPreview() {
     TodoManonPoulainTheme {
         //Detail("Android")
-        Detail()
+        //Detail()
     }
 }
