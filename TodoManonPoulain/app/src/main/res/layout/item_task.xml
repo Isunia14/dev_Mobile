@@ -9,25 +9,34 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:layout_width="300dp"
+        android:layout_width="274dp"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
 
         <TextView
             android:id="@+id/task_title"
-            android:layout_width="293dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/holo_blue_bright"
             tools:text="Text Test" />
 
         <TextView
             android:id="@+id/textDescriptor"
-            android:layout_width="289dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:text="Text Description Test" />
 
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/editButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:clickable="true"
+        app:srcCompat="@drawable/baseline_mode_edit_24" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/deleteButton"
