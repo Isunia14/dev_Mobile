@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,7 +43,7 @@ fun Detail(modifier: Modifier = Modifier) {
     ){
         Text(
             text = "Task Detail",
-            //style=MaterialTheme.typography.h1,
+            style=MaterialTheme.typography.headlineLarge,
             modifier = modifier
         )
         Text(
@@ -51,7 +52,10 @@ fun Detail(modifier: Modifier = Modifier) {
         Text(
             text = "Description"
         )
-        
+        FloatingActionButton(
+            onClick = { /*TODO*/ }) {
+            
+        }
     }
 }
 
