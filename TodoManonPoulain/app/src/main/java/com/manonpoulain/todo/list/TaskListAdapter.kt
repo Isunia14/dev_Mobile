@@ -25,7 +25,7 @@ object MyItemsDiffCallback : DiffUtil.ItemCallback<Task>() {
 class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(MyItemsDiffCallback) {
 
     // on utilise `inner` ici afin d'avoir accès aux propriétés de l'adapter directement
-    inner class TaskViewHolder(val binding: FragmentTaskListBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class TaskViewHolder(val binding: ItemTaskBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(task: Task) {
             itemView.findViewById<TextView>(R.id.task_title).setText(task.title);
             itemView.findViewById<TextView>(R.id.textDescriptor).setText(task.description);
