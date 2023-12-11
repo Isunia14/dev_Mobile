@@ -33,6 +33,9 @@ class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(MyItem
                 // Utilisation de la lambda dans le ViewHolder:
                 onClickDelete(task)
             }
+            binding.editButton.setOnClickListener {
+                onClickEdit(task)
+            }
         }
 
     }
@@ -46,7 +49,9 @@ class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(MyItem
     var onClickDelete: (Task) -> Unit = {
 
     }
+    var onClickEdit: (Task) -> Unit = {
 
+    }
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
 
         holder.bind(currentList[position])

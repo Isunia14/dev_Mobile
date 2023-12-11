@@ -36,6 +36,7 @@ import java.util.UUID
 class DetailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        var task=intent.getSerializableExtra("task") as Task?
         setContent {
             TodoManonPoulainTheme {
                 // A surface container using the 'background' color from the theme
@@ -48,7 +49,7 @@ class DetailActivity : ComponentActivity() {
                         intent.putExtra("task", newTask)
                         setResult(RESULT_OK, intent);
                         finish();
-                    })
+                    }, initialTask = task)
                 }
             }
         }
@@ -56,8 +57,8 @@ class DetailActivity : ComponentActivity() {
 }
 
 @Composable
-fun Detail(modifier: Modifier = Modifier,onValidate: (Task) -> Unit) {
-    var task by remember { mutableStateOf(Task(UUID.randomUUID().toString(),"","")) } // faire les imports suggérés par l'IDE
+fun Detail(modifier: Modifier = Modifier,onValidate: (Task) -> Unit,initialTask: Task?) {
+    var task by remember { mutableStateOf(initialTask ?: Task(UUID.randomUUID().toString(),"","")) } // faire les imports suggérés par l'IDE
     Column(
         modifier = Modifier.padding(16.dp),
         Arrangement.spacedBy(16.dp)
