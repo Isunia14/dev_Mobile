@@ -14,7 +14,18 @@ import com.manonpoulain.todo.databinding.FragmentTaskListBinding
 import com.manonpoulain.todo.detail.DetailActivity
 import java.util.UUID
 
-class TaskListFragment : Fragment() {
+class TaskListFragment : Fragment(){
+    val adapterListener : TaskListListener = object : TaskListListener {
+        override fun onClickDelete(task: Task) {
+            taskList = taskList - task
+            refreshAdapter()
+        }// Supprimer la tâche
+        override fun onClickEdit(task: Task) {
+            val intent = Intent(context, DetailActivity::class.java)
+            intent.putExtra("task",task)
+            editTask.launch(intent)
+        }// Editer la tâche
+    }
 
     //private var taskList = listOf("Task 1", "Task 2", "Task 3")
 
@@ -24,7 +35,7 @@ class TaskListFragment : Fragment() {
         Task(id = "id_3", title = "Task 3")
     )
 
-    private val adapter = TaskListAdapter()
+    private val adapter = TaskListAdapter(adapterListener)
     private lateinit var binding : FragmentTaskListBinding
 
     override fun onCreateView(
@@ -34,17 +45,6 @@ class TaskListFragment : Fragment() {
     ): View? {
         binding = FragmentTaskListBinding.inflate(inflater, container, false)
         val rootView = binding.root
-
-        adapter.onClickDelete = { task ->
-            taskList = taskList - task
-            refreshAdapter()
-        }// Supprimer la tâche
-
-        adapter.onClickEdit = { task ->
-            val intent = Intent(context, DetailActivity::class.java)
-            intent.putExtra("task",task)
-            editTask.launch(intent)
-        }// Editer la tâche
 
         adapter.submitList(taskList)
         return rootView
@@ -63,7 +63,6 @@ class TaskListFragment : Fragment() {
             //taskList = taskList + newTask
             //refreshAdapter()
             val intent = Intent(context, DetailActivity::class.java)
-            //startActivity(intent)
             createTask.launch(intent)
         }
         //super.onViewCreated(view, savedInstanceState)

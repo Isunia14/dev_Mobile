@@ -21,8 +21,12 @@ object MyItemsDiffCallback : DiffUtil.ItemCallback<Task>() {
         return newItem == oldItem // comparaison: est-ce le même "contenu" ? => mêmes valeurs? (avec data class: simple égalité)
     }
 }
+interface TaskListListener {
+    fun onClickDelete(task: Task)
+    fun onClickEdit(task: Task)
+}
 
-class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(MyItemsDiffCallback) {
+class TaskListAdapter(val listener: TaskListListener) : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(MyItemsDiffCallback) {
 
     // on utilise `inner` ici afin d'avoir accès aux propriétés de l'adapter directement
     inner class TaskViewHolder(val binding: ItemTaskBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -31,10 +35,10 @@ class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(MyItem
             binding.textDescriptor.setText(task.description);
             binding.deleteButton.setOnClickListener {
                 // Utilisation de la lambda dans le ViewHolder:
-                onClickDelete(task)
+                listener.onClickDelete(task)
             }
             binding.editButton.setOnClickListener {
-                onClickEdit(task)
+                listener.onClickEdit(task)
             }
         }
 
