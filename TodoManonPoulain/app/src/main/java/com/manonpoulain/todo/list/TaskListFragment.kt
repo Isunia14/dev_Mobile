@@ -7,11 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.manonpoulain.todo.R
+import com.manonpoulain.todo.data.Api
+import com.manonpoulain.todo.data.User
 import com.manonpoulain.todo.databinding.FragmentTaskListBinding
 import com.manonpoulain.todo.detail.DetailActivity
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 class TaskListFragment : Fragment(){
@@ -26,6 +30,16 @@ class TaskListFragment : Fragment(){
             editTask.launch(intent)
         }// Editer la tâche
     }
+
+    override fun onResume() {
+        lifecycleScope.launch {
+            val user = Api.userWebService.fetchUser().body()!!
+            binding.userTextView.text = user.name
+        }
+        super.onResume()
+    }
+
+
 
     //private var taskList = listOf("Task 1", "Task 2", "Task 3")
 
