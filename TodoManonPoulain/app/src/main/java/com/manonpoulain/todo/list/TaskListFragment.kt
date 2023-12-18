@@ -46,6 +46,11 @@ class TaskListFragment : Fragment(){
         binding = FragmentTaskListBinding.inflate(inflater, container, false)
         val rootView = binding.root
 
+        //On récup les info sauvegardées
+        var taskListArray = savedInstanceState?.getSerializable("tasklist") as? Array<Task>
+        taskList = taskListArray?.toList() ?: emptyList()
+
+
         adapter.submitList(taskList)
         return rootView
     }
@@ -67,6 +72,12 @@ class TaskListFragment : Fragment(){
         }
         //super.onViewCreated(view, savedInstanceState)
         recyclerView.adapter = adapter
+    }
+
+    //En gros c'est le truc avant le Destroy, quand on change d'orientation ça destroy l'activité, et ça ça permet de pas tout perdre
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putSerializable("tasklist",taskList.toTypedArray())
+        super.onSaveInstanceState(outState)
     }
 
     val createTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
