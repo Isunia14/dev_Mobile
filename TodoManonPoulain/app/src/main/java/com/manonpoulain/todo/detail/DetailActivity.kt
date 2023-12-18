@@ -1,5 +1,6 @@
 package com.manonpoulain.todo.detail
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -34,9 +35,20 @@ import com.manonpoulain.todo.list.Task
 import java.util.UUID
 
 class DetailActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var task=intent.getSerializableExtra("task") as Task?
+        when {
+            intent?.action == Intent.ACTION_SEND -> {
+                if ("text/plain" == intent.type) {
+                    val description = intent.getStringExtra(Intent.EXTRA_TEXT)
+                    if(intent.getStringExtra(Intent.EXTRA_TEXT) != null) {
+                        task = Task(UUID.randomUUID().toString(),  "",description.toString())
+                    } // Handle text being sent
+                }
+            }
+        }
         setContent {
             TodoManonPoulainTheme {
                 // A surface container using the 'background' color from the theme
@@ -53,6 +65,7 @@ class DetailActivity : ComponentActivity() {
                 }
             }
         }
+
     }
 }
 
