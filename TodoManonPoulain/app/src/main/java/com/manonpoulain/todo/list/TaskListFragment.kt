@@ -23,8 +23,11 @@ import java.util.UUID
 class TaskListFragment : Fragment(){
     val adapterListener : TaskListListener = object : TaskListListener {
         override fun onClickDelete(task: Task) {
-            taskList = taskList - task
-            refreshAdapter()
+            //taskList = taskList - task
+            //refreshAdapter()
+
+            viewModel.remove(task)
+
         }// Supprimer la tâche
         override fun onClickEdit(task: Task) {
             val intent = Intent(context, DetailActivity::class.java)
@@ -49,11 +52,11 @@ class TaskListFragment : Fragment(){
 
     //private var taskList = listOf("Task 1", "Task 2", "Task 3")
 
-    private var taskList = listOf(
+    /*private var taskList = listOf(
         Task(id = "id_1", title = "Task 1", description = "description 1"),
         Task(id = "id_2", title = "Task 2"),
         Task(id = "id_3", title = "Task 3")
-    )
+    )*/
 
     private val adapter = TaskListAdapter(adapterListener)
     private lateinit var binding : FragmentTaskListBinding
@@ -68,33 +71,31 @@ class TaskListFragment : Fragment(){
 
         //On récup les info sauvegardées
         var taskListArray = savedInstanceState?.getSerializable("tasklist") as? Array<Task>
-        taskList = taskListArray?.toList() ?: emptyList()
-
-
-        adapter.submitList(taskList)
+        //taskList = taskListArray?.toList() ?: emptyList()
+        viewModel.tasksStateFlow.value = taskListArray?.toList() ?: emptyList()
+        //adapter.submitList(taskList)
         return rootView
     }
 
-    fun refreshAdapter(){
-        adapter.submitList(taskList)
-        adapter.notifyDataSetChanged()
-    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val recyclerView = binding.recyclerView
         val button = binding.floatingActionButton2
         button.setOnClickListener {
             // Instanciation d'un objet task avec des données préremplies:
             //val newTask = Task(id = UUID.randomUUID().toString(), title = "Task ${taskList.size + 1}")
-            //taskList = taskList + newTask
             //refreshAdapter()
+
+            val newTask = Task(id = UUID.randomUUID().toString(), title = "Task ${ viewModel.tasksStateFlow.value.size + 1}")
+            viewModel.add(newTask)
+
             val intent = Intent(context, DetailActivity::class.java)
             createTask.launch(intent)
         }
 
         lifecycleScope.launch { // on lance une coroutine car `collect` est `suspend`
             viewModel.tasksStateFlow.collect { newList ->
-                // cette lambda est exécutée à chaque fois que la liste est mise à jour dans le VM
-                // -> ici, on met à jour la liste dans l'adapter
+                adapter.submitList(newList)
             }
         }
         //super.onViewCreated(view, savedInstanceState)
@@ -103,22 +104,20 @@ class TaskListFragment : Fragment(){
 
     //En gros c'est le truc avant le Destroy, quand on change d'orientation ça destroy l'activité, et ça ça permet de pas tout perdre
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putSerializable("tasklist",taskList.toTypedArray())
+        outState.putSerializable("tasklist",viewModel.tasksStateFlow.value.toTypedArray())
         super.onSaveInstanceState(outState)
     }
 
     val createTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = result.data?.getSerializableExtra("task") as Task?
         if(task != null) {
-            taskList = taskList + task
-            refreshAdapter()
+            viewModel.add(task)
         }
     }
     val editTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = result.data?.getSerializableExtra("task") as Task?
         if(task != null) {
-            taskList = taskList.map { if (it.id == task.id) task else it }
-            refreshAdapter()
+            viewModel.edit(task)
         }
     }
 
