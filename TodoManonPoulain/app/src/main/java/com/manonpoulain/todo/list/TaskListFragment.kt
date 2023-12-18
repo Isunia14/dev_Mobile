@@ -7,11 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.manonpoulain.todo.R
 import com.manonpoulain.todo.data.Api
+import com.manonpoulain.todo.data.TaskListViewModel
 import com.manonpoulain.todo.data.User
 import com.manonpoulain.todo.databinding.FragmentTaskListBinding
 import com.manonpoulain.todo.detail.DetailActivity
@@ -31,11 +33,15 @@ class TaskListFragment : Fragment(){
         }// Editer la tâche
     }
 
+    private val viewModel: TaskListViewModel by viewModels()
+
     override fun onResume() {
         lifecycleScope.launch {
             val user = Api.userWebService.fetchUser().body()!!
             binding.userTextView.text = user.name
         }
+
+        viewModel.refresh() // on demande de rafraîchir les données sans attendre le retour directement
         super.onResume()
     }
 
@@ -83,6 +89,13 @@ class TaskListFragment : Fragment(){
             //refreshAdapter()
             val intent = Intent(context, DetailActivity::class.java)
             createTask.launch(intent)
+        }
+
+        lifecycleScope.launch { // on lance une coroutine car `collect` est `suspend`
+            viewModel.tasksStateFlow.collect { newList ->
+                // cette lambda est exécutée à chaque fois que la liste est mise à jour dans le VM
+                // -> ici, on met à jour la liste dans l'adapter
+            }
         }
         //super.onViewCreated(view, savedInstanceState)
         recyclerView.adapter = adapter
