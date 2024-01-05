@@ -37,6 +37,10 @@ class fragment_task_list : Fragment() {
         return inflater.inflate(R.layout.fragment_task_list, container, false)
     }
 
+    override fun onResume() {
+        super.onResume()
+    }
+
     companion object {
         /**
          * Use this factory method to create a new instance of

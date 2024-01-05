@@ -1,5 +1,6 @@
 package com.manonpoulain.todo.list
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.manonpoulain.todo.R
 import com.manonpoulain.todo.data.Api
@@ -17,6 +19,7 @@ import com.manonpoulain.todo.data.TaskListViewModel
 import com.manonpoulain.todo.data.User
 import com.manonpoulain.todo.databinding.FragmentTaskListBinding
 import com.manonpoulain.todo.detail.DetailActivity
+import com.manonpoulain.todo.user.UserActivity
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -42,6 +45,18 @@ class TaskListFragment : Fragment(){
         lifecycleScope.launch {
             val user = Api.userWebService.fetchUser().body()!!
             binding.userTextView.text = user.name
+
+            //TODO : TP4 Q1 vérif que c'est bien dans ce onResume
+            //binding.avatarView.load("https://goo.gl/gEgYUd")
+
+            binding.avatarView.load(user.avatar) {
+                error(R.drawable.ic_launcher_background) // image par défaut en cas d'erreur
+            }
+
+            binding.avatarView.setOnClickListener {
+                var intent = Intent(context,UserActivity::class.java)
+                startActivity(intent)
+            }
         }
 
         viewModel.refresh() // on demande de rafraîchir les données sans attendre le retour directement
