@@ -1,9 +1,12 @@
 package com.manonpoulain.todo.user
 
+import android.Manifest
+import android.content.ContentValues
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -37,9 +40,32 @@ class UserActivity : AppCompatActivity() {
             var uri: Uri? by remember { mutableStateOf(null) }
             val scope = rememberCoroutineScope()
 
-            val takePicture =
+            val capturedUri by lazy {
+                contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, ContentValues())
+            }
+
+
+            ///// LAUNCHERS :
+
+            fun Uri.toRequestBody(): MultipartBody.Part {
+                val fileInputStream = contentResolver.openInputStream(this)!!
+                val fileBody = fileInputStream.readBytes().toRequestBody()
+                return MultipartBody.Part.createFormData(
+                    name = "avatar",
+                    filename = "avatar.jpg",
+                    body = fileBody
+                )
+            }
+
+            /*val takePicture =
                 rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {
                 bitmap = it
+            }*/
+
+            // launcher
+            val takePicture =
+                rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+                if (success) uri = capturedUri
             }
 
             val pickMedia =
@@ -51,8 +77,17 @@ class UserActivity : AppCompatActivity() {
                 }
             }
 
+            val requestPhotoPermission =
+                registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                // Do something if permission granted
+                if (isGranted) {
+                    Log.i("DEBUG", "permission granted")
+                    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                } else {
+                    Log.i("DEBUG", "permission denied")
+                }
+            }
 
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
 
             Column {
                 AsyncImage(
@@ -62,7 +97,7 @@ class UserActivity : AppCompatActivity() {
                 )
                 Button(
                     onClick = {
-                        takePicture.launch()
+                        takePicture.launch(capturedUri)
                         //Envoie la photo
                         scope.launch {
                             Api.userWebService.updateAvatar(bitmap!!.toRequestBody())
@@ -72,7 +107,12 @@ class UserActivity : AppCompatActivity() {
                 )
                 Button(
                     onClick = {
-                        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        requestPhotoPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        //pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+
+                        scope.launch {
+                            Api.userWebService.updateAvatar(uri!!.toRequestBody())
+                        }
                     },
                     content = { Text("Pick photo") }
                 )
@@ -94,13 +134,3 @@ private fun Bitmap.toRequestBody(): MultipartBody.Part {
     )
 }
 
-//TODO : résoudre pb
-/*private fun Uri.toRequestBody(): MultipartBody.Part {
-    val fileInputStream = contentResolver.openInputStream(this)!!
-    val fileBody = fileInputStream.readBytes().toRequestBody()
-    return MultipartBody.Part.createFormData(
-        name = "avatar",
-        filename = "avatar.jpg",
-        body = fileBody
-    )
-}*/
