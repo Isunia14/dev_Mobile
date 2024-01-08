@@ -13,6 +13,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.Button
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
 import com.manonpoulain.todo.R
 import com.manonpoulain.todo.data.Api
@@ -55,6 +57,8 @@ class UserActivity : AppCompatActivity() {
         )
     }
 
+    private val viewModel : UserViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +80,6 @@ class UserActivity : AppCompatActivity() {
                 bitmap = it
             }*/
 
-            // launcher
             val takePicture =
                 rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
                 if (success) {
@@ -85,7 +88,6 @@ class UserActivity : AppCompatActivity() {
                         Api.userWebService.updateAvatar(uri!!.toRequestBody())
                     }
                 }
-
             }
 
             val pickMedia =
