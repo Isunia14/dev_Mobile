@@ -74,7 +74,6 @@ class UserActivity : AppCompatActivity() {
 
 
             ///// LAUNCHERS :
-
             /*val takePicture =
                 rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {
                 bitmap = it
@@ -85,7 +84,7 @@ class UserActivity : AppCompatActivity() {
                 if (success) {
                     uri = capturedUri
                     scope.launch {
-                        Api.userWebService.updateAvatar(uri!!.toRequestBody())
+                        viewModel.UpdateAvatar(uri!!.toRequestBody())
                     }
                 }
             }
@@ -95,7 +94,7 @@ class UserActivity : AppCompatActivity() {
                 if (uriPicked != null) {
                     uri = uriPicked
                     scope.launch {
-                        Api.userWebService.updateAvatar(uri!!.toRequestBody())
+                        viewModel.UpdateAvatar(uri!!.toRequestBody())
                     }
 
                 } else {
@@ -131,7 +130,6 @@ class UserActivity : AppCompatActivity() {
                 Button(
                     onClick = {
                         requestPhotoPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                        //pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     },
                     content = { Text("Pick photo") }
                 )
