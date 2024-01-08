@@ -32,6 +32,30 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class UserActivity : AppCompatActivity() {
+
+    private fun Bitmap.toRequestBody(): MultipartBody.Part {
+        val tmpFile = File.createTempFile("avatar", "jpg")
+        tmpFile.outputStream().use { // *use* se charge de faire open et close
+            this.compress(Bitmap.CompressFormat.JPEG, 100, it) // *this* est le bitmap ici
+        }
+        return MultipartBody.Part.createFormData(
+            name = "avatar",
+            filename = "avatar.jpg",
+            body = tmpFile.readBytes().toRequestBody()
+        )
+    }
+
+    fun Uri.toRequestBody(): MultipartBody.Part {
+        val fileInputStream = contentResolver.openInputStream(this)!!
+        val fileBody = fileInputStream.readBytes().toRequestBody()
+        return MultipartBody.Part.createFormData(
+            name = "avatar",
+            filename = "avatar.jpg",
+            body = fileBody
+        )
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user)
@@ -47,16 +71,6 @@ class UserActivity : AppCompatActivity() {
 
             ///// LAUNCHERS :
 
-            fun Uri.toRequestBody(): MultipartBody.Part {
-                val fileInputStream = contentResolver.openInputStream(this)!!
-                val fileBody = fileInputStream.readBytes().toRequestBody()
-                return MultipartBody.Part.createFormData(
-                    name = "avatar",
-                    filename = "avatar.jpg",
-                    body = fileBody
-                )
-            }
-
             /*val takePicture =
                 rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {
                 bitmap = it
@@ -65,20 +79,30 @@ class UserActivity : AppCompatActivity() {
             // launcher
             val takePicture =
                 rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-                if (success) uri = capturedUri
+                if (success) {
+                    uri = capturedUri
+                    scope.launch {
+                        Api.userWebService.updateAvatar(uri!!.toRequestBody())
+                    }
+                }
+
             }
 
             val pickMedia =
-                registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uriPicked ->
+                rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uriPicked ->
                 if (uriPicked != null) {
                     uri = uriPicked
+                    scope.launch {
+                        Api.userWebService.updateAvatar(uri!!.toRequestBody())
+                    }
+
                 } else {
                     Log.d("PhotoPicker", "No media selected")
                 }
             }
 
             val requestPhotoPermission =
-                registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 // Do something if permission granted
                 if (isGranted) {
                     Log.i("DEBUG", "permission granted")
@@ -99,9 +123,6 @@ class UserActivity : AppCompatActivity() {
                     onClick = {
                         takePicture.launch(capturedUri)
                         //Envoie la photo
-                        scope.launch {
-                            Api.userWebService.updateAvatar(bitmap!!.toRequestBody())
-                        }
                     },
                     content = { Text("Take picture") }
                 )
@@ -109,10 +130,6 @@ class UserActivity : AppCompatActivity() {
                     onClick = {
                         requestPhotoPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                         //pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-
-                        scope.launch {
-                            Api.userWebService.updateAvatar(uri!!.toRequestBody())
-                        }
                     },
                     content = { Text("Pick photo") }
                 )
@@ -120,17 +137,5 @@ class UserActivity : AppCompatActivity() {
         }
     }
 
-}
-
-private fun Bitmap.toRequestBody(): MultipartBody.Part {
-    val tmpFile = File.createTempFile("avatar", "jpg")
-    tmpFile.outputStream().use { // *use* se charge de faire open et close
-        this.compress(Bitmap.CompressFormat.JPEG, 100, it) // *this* est le bitmap ici
-    }
-    return MultipartBody.Part.createFormData(
-        name = "avatar",
-        filename = "avatar.jpg",
-        body = tmpFile.readBytes().toRequestBody()
-    )
 }
 
