@@ -1,6 +1,7 @@
 package com.manonpoulain.todo.data
 
 import android.graphics.Bitmap
+import kotlinx.serialization.SerialName
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
@@ -23,9 +24,8 @@ interface UserWebService {
     @PATCH("sync/v9/sync")
     suspend fun update(@Body userUpdate: UserUpdate): Response<Unit>
 
-    enum class UserUpdate {
-        //TODO : Remplir ?
-
-    }
+    data class UserUpdate (
+        @SerialName("full_name")
+        val name: String, )
 
 }

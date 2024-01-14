@@ -22,4 +22,9 @@ class UserViewModel : ViewModel() {
     suspend fun UpdateAvatar(uriToRequest : MultipartBody.Part) {
         Api.userWebService.updateAvatar(uriToRequest)
     }
+
+    suspend fun GetUserName() : String {
+        val user = Api.userWebService.fetchUser().body()!!
+        return user.name
+    }
 }

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,6 +69,8 @@ class UserActivity : AppCompatActivity() {
             var uri: Uri? by remember { mutableStateOf(null) }
             val scope = rememberCoroutineScope()
 
+            var username: String? by remember { mutableStateOf(null) }
+
             val capturedUri by lazy {
                 contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, ContentValues())
             }
@@ -113,6 +116,14 @@ class UserActivity : AppCompatActivity() {
                 }
             }
 
+            fun ChangeUsername() {
+
+            }
+
+            suspend fun GetUsernameAtFirst() {
+                username = viewModel.GetUserName()
+            }
+
 
             Column {
                 AsyncImage(
@@ -133,6 +144,13 @@ class UserActivity : AppCompatActivity() {
                     },
                     content = { Text("Pick photo") }
                 )
+                TextField(
+                    value = username!!,
+                    onValueChange = { username = it },
+
+                    label = { Text("Change Full Name") }
+                )
+
             }
         }
     }
